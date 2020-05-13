@@ -92,5 +92,5 @@ class Server():
       return Response( json.dumps(response), mimetype='application/json' )
     else:
       response['hasResult'] = True
-      response['filename'] = '/results/' + uid + '/result.png'
+      response['filename'] = '/results/result-' + uid + '/result.png'
       return Response( json.dumps(response), mimetype='application/json' )

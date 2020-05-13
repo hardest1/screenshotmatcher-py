@@ -26,7 +26,7 @@ class Matcher():
   def __init__(self, match_uid, photo):
 
     self.match_uid = match_uid
-    self.match_dir = '../www/results/' + match_uid
+    self.match_dir = '../www/results/result-' + match_uid
 
     self.screenshot_file = 'screenshot.png'
     self.screenshot = ImageGrab.grab()
