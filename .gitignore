@@ -1,0 +1,8 @@
+www/results/*
+!www/results/.gitkeep
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+Thumbs.db
