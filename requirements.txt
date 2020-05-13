@@ -11,7 +11,7 @@ MarkupSafe==1.1.1
 matplotlib==3.2.1
 mss==5.1.0
 numpy==1.18.4
-opencv-contrib-python==4.2.0.34
+opencv-contrib-python==3.4.2.16
 Pillow==7.1.2
 pyparsing==2.4.7
 pyscreenshot==2.1
