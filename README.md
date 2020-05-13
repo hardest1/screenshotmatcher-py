@@ -1,0 +1,1 @@
+# screenshotmatcher-py
