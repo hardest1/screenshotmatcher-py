@@ -1,6 +1,8 @@
 import os
 import uuid
 import json
+import requests
+import urllib3
 from flask import Flask, request, redirect, url_for, Response
 from werkzeug.utils import secure_filename
 
@@ -27,6 +29,7 @@ class Server():
     self.app.add_url_rule('/heartbeat', 'heartbeat', self.heartbeat_route)
     self.app.add_url_rule('/get-url', 'get-url', self.get_url_route)
     
+    self.app.add_url_rule('/feedback', 'feedback', self.feedback_route, methods=['POST'])
     self.app.add_url_rule('/match', 'match', self.match_route, methods=['POST'])
 
 
@@ -50,6 +53,30 @@ class Server():
 
   def get_url_route(self):
     return SERVICE_URL
+
+  def feedback_route(self):
+    uid = request.values.get('uid')
+    has_result = request.values.get('hasResult')
+    comment = request.values.get('comment')
+
+
+    payload = { 'secret': "d45f6g7h8j9§$d5AHF7h8k", 'comment': comment }
+
+    file_payload = [
+     ('photo', ('photo', open(self.results_dir + '/result-' + uid + '/photo.jpg', 'rb'), 'image/jpeg')),
+     ('screenshot', ('screenshot', open(self.results_dir + '/result-' + uid + '/screenshot.png', 'rb'), 'image/png')),
+    ]
+
+    if has_result and has_result != 'false':
+      file_payload.append(
+        ('result', ('result', open(self.results_dir + '/result-' + uid + '/result.png', 'rb'), 'image/png'))
+      )
+
+    urllib3.disable_warnings()
+    r = requests.post("https://feedback.hartmann-it.de/feedback", data=payload, files=file_payload, verify=False )
+
+    print(r.text)
+    return "ok"
 
   def match_route(self):
 
@@ -83,7 +110,7 @@ class Server():
     # Start matcher
     matcher = Matcher(uid, filename)
 
-    match_result = matcher.match(algorithm='ORB')
+    match_result = matcher.match(algorithm='SURF')
 
     response = {'uid': uid}
 
