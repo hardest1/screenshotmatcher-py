@@ -41,7 +41,7 @@ class Tray():
     self.icon.stop()
 
   def onclick_qr(self):
-    os.system('python show_qr.py')
+    os.system('python3 show_qr.py')
 
   def onclick_results(self):
     common.utils.open_file_or_dir(common.utils.getScriptDir(__file__) + '/../../www/results')
