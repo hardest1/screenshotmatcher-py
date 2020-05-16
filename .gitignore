@@ -1,6 +1,8 @@
 www/results/*
 !www/results/.gitkeep
 
+match.log
+
 __pycache__/
 *.py[cod]
 *$py.class

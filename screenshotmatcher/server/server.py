@@ -75,7 +75,6 @@ class Server():
     urllib3.disable_warnings()
     r = requests.post("https://feedback.hartmann-it.de/feedback", data=payload, files=file_payload, verify=False )
 
-    print(r.text)
     return "ok"
 
   def match_route(self):

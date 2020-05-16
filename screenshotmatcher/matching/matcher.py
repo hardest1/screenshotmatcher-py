@@ -2,6 +2,7 @@ import pyscreenshot as ImageGrab
 import time
 import numpy as np
 from matplotlib import pyplot as plt
+import logging
 
 from cv2 import ( # pylint: disable=no-name-in-module
   perspectiveTransform,
@@ -25,6 +26,8 @@ class Matcher():
   
   def __init__(self, match_uid, photo):
 
+    logging.basicConfig(filename='../match.log',level=logging.DEBUG)
+
     self.match_uid = match_uid
     self.match_dir = '../www/results/result-' + match_uid
 
@@ -47,15 +50,14 @@ class Matcher():
     # Provisional switch statement
     if algorithm == 'SURF':
       match_result = self.algorithm_SURF(photo, screen, screen_colored)
-    if algorithm == 'ORB':
+    elif algorithm == 'ORB':
       match_result = self.algorithm_ORB(photo, screen, screen_colored)
     else:
       match_result = self.algorithm_SURF(photo, screen, screen_colored)
 
 
-    print( round( (time.perf_counter() - start_time) * 1000 ), 'ms' )
+    logging.info('{}ms'.format(round( (time.perf_counter() - start_time) * 1000 )))
 
-    
     return match_result
 
   def algorithm_SURF(self, photo, screen, screen_colored):
@@ -76,6 +78,8 @@ class Matcher():
     # Calc knn Matches
     matches = flann.knnMatch(des_photo, des_screen, k=2)
 
+    logging.info('knn {}'.format(len(matches)))
+
     if not matches or len(matches) == 0:
       return False
 
@@ -85,8 +89,11 @@ class Matcher():
         if m.distance < 0.75*n.distance:
             good.append(m)
 
-    if not good or len(good) < 20:
+    logging.info('good {}'.format(len(good)))
+
+    if not good or len(good) < 10:
       return False
+
 
     photo_pts = np.float32([ kp_photo[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
     screen_pts = np.float32([ kp_screen[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
@@ -116,7 +123,27 @@ class Matcher():
       if dst[i][0][1] > maxY:
         maxY = dst[i][0][1]
 
-    imwrite(self.match_dir + '/result.png', screen_colored[ int(minY):int(maxY), int(minX):int(maxX)])
+    minX = int(minX)
+    minY = int(minY)
+    maxX = int(maxX)
+    maxY = int(maxY)
+
+    if minX < 0:
+      minX = 0
+    if minY < 0:
+      minY = 0
+
+    logging.info('minY {}'.format(int(minY)))
+    logging.info('minX {}'.format(int(minX)))
+    logging.info('maxY {}'.format(int(maxY)))
+    logging.info('maxX {}'.format(int(maxX)))
+
+    if maxX - minX <= 0:
+      return False
+    if maxY - minY <= 0:
+      return False
+
+    imwrite(self.match_dir + '/result.png', screen_colored[ minY:maxY, minX:maxX])
 
     return True
 
@@ -175,6 +202,26 @@ class Matcher():
         minY = dst[i][0][1]
       if dst[i][0][1] > maxY:
         maxY = dst[i][0][1]
+
+    minX = int(minX)
+    minY = int(minY)
+    maxX = int(maxX)
+    maxY = int(maxY)
+
+    if minX < 0:
+      minX = 0
+    if minY < 0:
+      minY = 0
+
+    logging.info('minY {}'.format(int(minY)))
+    logging.info('minX {}'.format(int(minX)))
+    logging.info('maxY {}'.format(int(maxY)))
+    logging.info('maxX {}'.format(int(maxX)))
+
+    if maxX - minX <= 0:
+      return False
+    if maxY - minY <= 0:
+      return False
 
     imwrite(self.match_dir + '/result.png', screen_colored[ int(minY):int(maxY), int(minX):int(maxX)])
 
