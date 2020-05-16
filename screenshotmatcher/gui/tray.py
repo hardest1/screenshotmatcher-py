@@ -1,37 +1,51 @@
-from wx import App, Icon, Menu, Frame, BITMAP_TYPE_PNG, CallAfter, EVT_MENU # pylint: disable=no-name-in-module
-from wx.adv import TaskBarIcon # pylint: disable=no-name-in-module
+from PIL import Image, ImageDraw
+from pystray import Icon, Menu as menu, MenuItem as item
+import os
 
-import gui.qrcode
 import common.utils
 
-class Tray(TaskBarIcon):
+class Tray():
 
-    def __init__(self, app, app_name, icon_path):
-        TaskBarIcon.__init__(self)
-        self.app = app
-        self.app_name = app_name
-        self.SetIcon(Icon(icon_path, BITMAP_TYPE_PNG), app_name)
-        self.Bind(EVT_MENU, self.OnTaskbarQR, id=1)
-        self.Bind(EVT_MENU, self.OnTaskbarResults, id=2)
-        self.Bind(EVT_MENU, self.OnTaskbarClose, id=3)
-       
+  def __init__(self, app_name):
+    self.app_name = app_name
+    self.icon = Icon(
+        self.app_name,
+        icon=self.get_icon(),
+        menu=menu(
+            item(
+                'Show QR code',
+                lambda icon: self.onclick_qr()),
+            item(
+                'Show Results',
+                lambda icon: self.onclick_results()),
+            menu.SEPARATOR,
+            item(
+                'Quit',
+                lambda icon: self.onclick_quit())))
 
-    def CreatePopupMenu(self):
-        menu = Menu()
-        menu.Append(1, 'Show QR Code')
-        menu.Append(2, 'Show Results')
-        menu.Append(3, 'Close')
-        return menu
+  def get_icon(self):
+    width = 64
+    height = 64
+    color1 = 'white'
+    color2 = 'black'
+    result = Image.new('RGB', (width, height), color1)
+    dc = ImageDraw.Draw(result)
+    dc.rectangle((width // 2, 0, width, height // 2), fill=color2)
+    dc.rectangle((0, height // 2, width // 2, height), fill=color2)
+    return result
+  
+  def run(self):
+    self.icon.run(self.setup)
 
-    def OnTaskbarQR(self, event):
-        # Initialize QR code window
-        self.qr_frame = gui.qrcode.QRCodeFrame(self, None, -1, self.app_name)
-        self.qr_frame.Show(True)
+  def onclick_quit(self):
+    self.icon.stop()
 
-    def OnTaskbarResults(self, event):
-        common.utils.open_file_or_dir(common.utils.getScriptDir(__file__) + '/../../www/results')
+  def onclick_qr(self):
+    os.system('python show_qr.py')
 
-    def OnTaskbarClose(self, event):
-        if hasattr(self, 'qr_frame') and self.qr_frame:
-            CallAfter(self.qr_frame.Destroy)
-        self.Destroy()
+  def onclick_results(self):
+    common.utils.open_file_or_dir(common.utils.getScriptDir(__file__) + '/../../www/results')
+
+  def setup(self, icon):
+    self.icon.visible = True
+

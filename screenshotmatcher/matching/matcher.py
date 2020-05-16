@@ -1,7 +1,6 @@
 import pyscreenshot as ImageGrab
 import time
 import numpy as np
-from matplotlib import pyplot as plt
 import logging
 
 from cv2 import ( # pylint: disable=no-name-in-module

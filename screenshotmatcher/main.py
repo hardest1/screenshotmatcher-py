@@ -1,5 +1,4 @@
 # Import third party modules
-from wx import App
 import threading
 import logging
 import time
@@ -16,23 +15,15 @@ import common.utils
 from matching.matcher import Matcher
 from server.server import Server
 
-# Main App
-class MainApp(App):
+# Init Server
+server = Server()
 
-    def OnInit(self):
-        # Initialize tray icon/menu
-        self.tray = gui.tray.Tray(self, APP_NAME, ICON_PATH)
-        return True
+# Init Tray
+tray = gui.tray.Tray(APP_NAME)
 
-if __name__ == "__main__":
+# Start server in different thread
+x = threading.Thread(target=server.start, args=(), daemon=True)
+x.start()
 
-    # Init Server and GUI
-    server = Server()
-    app = MainApp()
-    
-    # Start server in different thread
-    x = threading.Thread(target=server.start, args=(), daemon=True)
-    x.start()
-
-    # Start GUI event loop
-    app.MainLoop()
+# Start Tray event loop
+tray.run()
