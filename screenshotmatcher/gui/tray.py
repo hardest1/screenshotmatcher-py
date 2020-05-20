@@ -1,7 +1,8 @@
 from PIL import Image, ImageDraw
 from pystray import Icon, Menu as menu, MenuItem as item
 import os
-
+import subprocess
+import platform
 import common.utils
 
 class Tray():
@@ -41,7 +42,11 @@ class Tray():
     self.icon.stop()
 
   def onclick_qr(self):
-    os.system('python3 show_qr.py')
+    if platform.system() == 'Linux':
+      os.system('python3 show_qr.py')
+    else:
+      subprocess.run('show_qr.py', shell=True)
+    
 
   def onclick_results(self):
     common.utils.open_file_or_dir(common.utils.getScriptDir(__file__) + '/../../www/results')
