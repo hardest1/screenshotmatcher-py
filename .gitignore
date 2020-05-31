@@ -1,5 +1,5 @@
-www/results/*
-!www/results/.gitkeep
+screenshotmatcher/www/results/*
+!screenshotmatcher/www/results/.gitkeep
 
 match.log
 server.log

@@ -82,7 +82,7 @@ class Tray():
     
 
   def onclick_results(self):
-    common.utils.open_file_or_dir(common.utils.getScriptDir(__file__) + '/../../www/results')
+    common.utils.open_file_or_dir(common.utils.getScriptDir(__file__) + '/../www/results')
 
   def setup(self, icon):
     self.icon.visible = True

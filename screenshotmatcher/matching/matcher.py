@@ -25,10 +25,10 @@ class Matcher():
   
   def __init__(self, match_uid, photo):
 
-    logging.basicConfig(filename='../match.log',level=logging.DEBUG)
+    logging.basicConfig(filename='./match.log',level=logging.DEBUG)
 
     self.match_uid = match_uid
-    self.match_dir = '../www/results/result-' + match_uid
+    self.match_dir = './www/results/result-' + match_uid
 
     self.screenshot_file = 'screenshot.png'
     self.screenshot = ImageGrab.grab()
@@ -94,16 +94,16 @@ class Matcher():
       return False
 
 
-    photo_pts = np.float32([ kp_photo[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
-    screen_pts = np.float32([ kp_screen[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
+    photo_pts = np.float32([ kp_photo[m.queryIdx].pt for m in good ]).reshape(-1,1,2) # pylint: disable=too-many-function-args
+    screen_pts = np.float32([ kp_screen[m.trainIdx].pt for m in good ]).reshape(-1,1,2) # pylint: disable=too-many-function-args
 
-    M, mask = findHomography(photo_pts, screen_pts, RANSAC, 5.0)
+    M, _ = findHomography(photo_pts, screen_pts, RANSAC, 5.0)
 
     if len(M) == 0:
       return False
 
     h, w = photo.shape
-    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2) # pylint: disable=too-many-function-args
     dst = perspectiveTransform(pts, M)
 
 
@@ -174,16 +174,16 @@ class Matcher():
     if not good or len(good) < 20:
       return False
 
-    photo_pts = np.float32([ kp_photo[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
-    screen_pts = np.float32([ kp_screen[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
+    photo_pts = np.float32([ kp_photo[m.queryIdx].pt for m in good ]).reshape(-1,1,2) # pylint: disable=too-many-function-args
+    screen_pts = np.float32([ kp_screen[m.trainIdx].pt for m in good ]).reshape(-1,1,2) # pylint: disable=too-many-function-args
 
-    M, mask = findHomography(photo_pts, screen_pts, RANSAC, 5.0)
+    M, _ = findHomography(photo_pts, screen_pts, RANSAC, 5.0)
 
     if len(M) == 0:
       return False
 
     h, w = photo.shape
-    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2) # pylint: disable=too-many-function-args
     dst = perspectiveTransform(pts, M)
 
 

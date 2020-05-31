@@ -16,11 +16,11 @@ from common.utils import allowed_file
 class Server():
   def __init__(self):
 
-    self.app = Flask(__name__, static_url_path='/', static_folder='../../www')
+    self.app = Flask(__name__, static_url_path='/', static_folder='../www')
 
-    logging.basicConfig(filename='../server.log',level=logging.DEBUG)
+    logging.basicConfig(filename='./server.log',level=logging.DEBUG)
 
-    self.results_dir = '../www/results'
+    self.results_dir = './www/results'
 
     self.app.add_url_rule('/', 'index', self.index_route)
     self.app.add_url_rule('/heartbeat', 'heartbeat', self.heartbeat_route)
