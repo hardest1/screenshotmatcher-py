@@ -1,5 +1,5 @@
 import common.utils
-
+import sys
 
 class Config():
     
@@ -12,3 +12,5 @@ class Config():
 
   DEFAULT_ALGORITHM = 'SURF'
   CURRENT_ALGORITHM = DEFAULT_ALGORITHM
+
+  IS_DIST = getattr(sys, 'frozen', False)

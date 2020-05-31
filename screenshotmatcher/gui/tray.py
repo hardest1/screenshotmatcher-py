@@ -66,25 +66,21 @@ class Tray():
   def onclick_quit(self):
     self.icon.stop()
 
-  def onclick_test(self):
-    print(Config.CURRENT_ALGORITHM)
-    print(self.testvar)
-
-  def onclick_switch_algo(self):
-    Config.CURRENT_ALGORITHM = ':-)'
-    self.testvar = ':-)'
-    self.icon.stop()
-    self.icon.run(self.setup)
-
   def onclick_qr(self):
-    if platform.system() == 'Linux':
-      os.system('python3 show_qr.py')
+    if Config.IS_DIST:
+      os.system('show_qr "{}"'.format(Config.SERVICE_URL))
     else:
-      subprocess.run('show_qr.py', shell=True)
+      if platform.system() == 'Linux':
+        os.system('python3 show_qr.py "{}"'.format(Config.SERVICE_URL))
+      else:
+        subprocess.run('show_qr.py "{}"'.format(Config.SERVICE_URL), shell=True)
     
 
   def onclick_results(self):
-    common.utils.open_file_or_dir(common.utils.getScriptDir(__file__) + '/../www/results')
+    if Config.IS_DIST:
+      common.utils.open_file_or_dir('./www')
+    else:
+      common.utils.open_file_or_dir(common.utils.getScriptDir(__file__) + '/../www/results')
 
   def setup(self, icon):
     self.icon.visible = True

@@ -9,3 +9,9 @@ __pycache__/
 *$py.class
 
 Thumbs.db
+
+build
+dist
+main.spec
+show_qr.spec
+ScreenshotMatcher.spec

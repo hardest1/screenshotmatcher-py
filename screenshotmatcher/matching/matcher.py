@@ -2,6 +2,8 @@ import pyscreenshot as ImageGrab
 import time
 import numpy as np
 import logging
+import os
+import sys
 
 from cv2 import ( # pylint: disable=no-name-in-module
   perspectiveTransform,
@@ -20,6 +22,8 @@ from cv2.xfeatures2d import ( # pylint: disable=no-name-in-module,import-error
   SURF_create,
 )
 
+from common.config import Config
+
 
 class Matcher():
   
@@ -28,6 +32,7 @@ class Matcher():
     logging.basicConfig(filename='./match.log',level=logging.DEBUG)
 
     self.match_uid = match_uid
+
     self.match_dir = './www/results/result-' + match_uid
 
     self.screenshot_file = 'screenshot.png'

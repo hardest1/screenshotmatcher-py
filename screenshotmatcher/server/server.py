@@ -1,10 +1,11 @@
 import os
+import sys
 import uuid
 import json
 import requests
 import urllib3
 import logging
-from flask import Flask, request, redirect, url_for, Response
+from flask import Flask, request, redirect, url_for, Response, send_from_directory
 from werkzeug.utils import secure_filename
 
 from common.config import Config
@@ -16,11 +17,17 @@ from common.utils import allowed_file
 class Server():
   def __init__(self):
 
-    self.app = Flask(__name__, static_url_path='/', static_folder='../www')
-
     logging.basicConfig(filename='./server.log',level=logging.DEBUG)
 
+    if Config.IS_DIST:
+      static_path = 'www'
+    else:
+      static_path = '../www'
+
     self.results_dir = './www/results'
+
+    self.app = Flask(__name__, static_url_path='/', static_folder=static_path)
+
 
     self.app.add_url_rule('/', 'index', self.index_route)
     self.app.add_url_rule('/heartbeat', 'heartbeat', self.heartbeat_route)

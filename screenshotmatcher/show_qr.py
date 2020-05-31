@@ -2,21 +2,22 @@
 
 import PySimpleGUI as sg
 
-from common.config import Config
 import qrcode
 import sys
 import io
-    
-img = qrcode.make(Config.SERVICE_URL)
+
+if len(sys.argv) < 2:
+    print('Usage: show_qr STR_TO_ENCODE')
+    sys.exit()
+
+img = qrcode.make(sys.argv[1])
 
 bio = io.BytesIO()
 img.save(bio, format="PNG")
 del img
 
-# All the stuff inside your window.
 layout = [[sg.Image(data=bio.getvalue())]]
-# Create the Window
-window = sg.Window(Config.APP_NAME, layout)
+window = sg.Window('ScreenshotMatcher - Pair device', layout)
 
 
 event, values = window.read()
