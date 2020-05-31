@@ -56,15 +56,7 @@ class Tray():
     return inner
 
   def get_icon(self):
-    width = 64
-    height = 64
-    color1 = 'white'
-    color2 = 'black'
-    result = Image.new('RGB', (width, height), color1)
-    dc = ImageDraw.Draw(result)
-    dc.rectangle((width // 2, 0, width, height // 2), fill=color2)
-    dc.rectangle((0, height // 2, width // 2, height), fill=color2)
-    return result
+    return Image.open(os.path.dirname(os.path.realpath(__file__)) + '/brand.png')
   
   def run(self):
     self.icon.run(self.setup)
