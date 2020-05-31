@@ -4,10 +4,7 @@ import logging
 import time
 
 # Import app config
-from common.config import (
-    APP_NAME, 
-    ICON_PATH,
-)
+from common.config import Config
 
 # Import app parts
 import gui.tray
@@ -19,7 +16,7 @@ from server.server import Server
 server = Server()
 
 # Init Tray
-tray = gui.tray.Tray(APP_NAME)
+tray = gui.tray.Tray(Config.APP_NAME)
 
 # Start server in different thread
 x = threading.Thread(target=server.start, args=(), daemon=True)

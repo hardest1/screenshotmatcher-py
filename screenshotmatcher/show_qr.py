@@ -2,12 +2,12 @@
 
 import PySimpleGUI as sg
 
-import common.config
+from common.config import Config
 import qrcode
 import sys
 import io
     
-img = qrcode.make(common.config.SERVICE_URL)
+img = qrcode.make(Config.SERVICE_URL)
 
 bio = io.BytesIO()
 img.save(bio, format="PNG")
@@ -16,7 +16,7 @@ del img
 # All the stuff inside your window.
 layout = [[sg.Image(data=bio.getvalue())]]
 # Create the Window
-window = sg.Window(common.config.APP_NAME, layout)
+window = sg.Window(Config.APP_NAME, layout)
 
 
 event, values = window.read()

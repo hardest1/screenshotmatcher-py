@@ -3,16 +3,11 @@ import uuid
 import json
 import requests
 import urllib3
+import logging
 from flask import Flask, request, redirect, url_for, Response
 from werkzeug.utils import secure_filename
 
-from common.config import (
-    APP_NAME, 
-    ICON_PATH,
-    HOST,
-    PORT,
-    SERVICE_URL
-)
+from common.config import Config
 
 from matching.matcher import Matcher
 from common.utils import allowed_file
@@ -22,6 +17,8 @@ class Server():
   def __init__(self):
 
     self.app = Flask(__name__, static_url_path='/', static_folder='../../www')
+
+    logging.basicConfig(filename='../server.log',level=logging.DEBUG)
 
     self.results_dir = '../www/results'
 
@@ -34,7 +31,7 @@ class Server():
 
 
   def start(self):
-    self.app.run(host=HOST, port=PORT, threaded=True)
+    self.app.run(host=Config.HOST, port=Config.PORT, threaded=True)
 
   def stop(self):
     _shutdown = request.environ.get('werkzeug.server.shutdown')
@@ -52,15 +49,21 @@ class Server():
     return "ok"
 
   def get_url_route(self):
-    return SERVICE_URL
+    return Config.SERVICE_URL
 
   def feedback_route(self):
     uid = request.values.get('uid')
     has_result = request.values.get('hasResult')
     comment = request.values.get('comment')
+    device = request.values.get('device')
 
 
-    payload = { 'secret': "d45f6g7h8j9§$d5AHF7h8k", 'comment': comment }
+    payload = { 
+      'secret': "d45f6g7h8j9§$d5AHF7h8k", 
+      'comment': comment,
+      'algorithm': Config.CURRENT_ALGORITHM,
+      'device': device
+    }
 
     file_payload = [
      ('photo', ('photo', open(self.results_dir + '/result-' + uid + '/photo.jpg', 'rb'), 'image/jpeg')),
@@ -72,8 +75,10 @@ class Server():
         ('result', ('result', open(self.results_dir + '/result-' + uid + '/result.png', 'rb'), 'image/png'))
       )
 
+    logging.info('sending feedback {}'.format(uid))
+
     urllib3.disable_warnings()
-    r = requests.post("https://feedback.hartmann-it.de/feedback", data=payload, files=file_payload, verify=False )
+    requests.post("https://feedback.hartmann-it.de/feedback", data=payload, files=file_payload, verify=False )
 
     return "ok"
 
@@ -109,12 +114,14 @@ class Server():
     # Start matcher
     matcher = Matcher(uid, filename)
 
-    match_result = matcher.match(algorithm='SURF')
+    #print('Using {}'.format(Config.CURRENT_ALGORITHM))
+    match_result = matcher.match(algorithm=Config.CURRENT_ALGORITHM)
 
     response = {'uid': uid}
 
     if not match_result:
       response['hasResult'] = False
+      response['screenshot'] = '/results/result-' + uid + '/screenshot.png'
       return Response( json.dumps(response), mimetype='application/json' )
     else:
       response['hasResult'] = True
