@@ -2,6 +2,7 @@ www/results/*
 !www/results/.gitkeep
 
 match.log
+server.log
 
 __pycache__/
 *.py[cod]
