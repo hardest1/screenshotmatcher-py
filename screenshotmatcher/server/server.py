@@ -54,6 +54,7 @@ class Server():
   def feedback_route(self):
     uid = request.values.get('uid')
     has_result = request.values.get('hasResult')
+    has_screenshot = request.values.get('hasScreenshot')
     comment = request.values.get('comment')
     device = request.values.get('device')
 
@@ -61,6 +62,7 @@ class Server():
     payload = { 
       'secret': "d45f6g7h8j9§$d5AHF7h8k", 
       'comment': comment,
+      'hasScreenshot': has_screenshot,
       'algorithm': Config.CURRENT_ALGORITHM,
       'device': device
     }
