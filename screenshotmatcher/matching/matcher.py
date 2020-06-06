@@ -29,8 +29,6 @@ class Matcher():
   
   def __init__(self, match_uid, photo):
 
-    logging.basicConfig(filename='./match.log',level=logging.DEBUG)
-
     self.match_uid = match_uid
 
     self.match_dir = './www/results/result-' + match_uid
@@ -40,6 +38,12 @@ class Matcher():
     self.screenshot.save(self.match_dir + '/' + self.screenshot_file)
 
     self.photo_file = photo
+  
+  def writeLog(self, msg):
+    logging.info('MATCHER - {}'.format(msg))
+  
+  def formatTimeDiff(self, start, end):
+    return round( (end - start) * 1000, 2 )
 
   def match(self, algorithm='SURF'):
 
@@ -59,30 +63,43 @@ class Matcher():
     else:
       match_result = self.algorithm_SURF(photo, screen, screen_colored)
 
-
-    logging.info('{}ms'.format(round( (time.perf_counter() - start_time) * 1000 )))
+    self.writeLog('FINAL TIME {}ms'.format(round( (time.perf_counter() - start_time) * 1000 )))
 
     return match_result
 
   def algorithm_SURF(self, photo, screen, screen_colored):
 
+    t1 = time.perf_counter()
+
     # Init algorithm
     surf = SURF_create(400)
     surf.setUpright(True)
 
+    t2 = time.perf_counter()
+
+    self.writeLog('Created SURF object - {}ms'.format( self.formatTimeDiff(t1, t2) ))
+
     # Detect and compute
     kp_photo, des_photo = surf.detectAndCompute(photo, None)
     kp_screen, des_screen = surf.detectAndCompute(screen, None)
+
+    t3 = time.perf_counter()
+    self.writeLog('Detected keypoints - {}ms'.format( self.formatTimeDiff(t2, t3) ))
 
     # Descriptor Matcher
     index_params = dict(algorithm = 0, trees = 5)
     search_params = dict(checks = 50)
     flann = FlannBasedMatcher(index_params, search_params)
 
+    t4 = time.perf_counter()
+    self.writeLog('Initialized Flann Matcher - {}ms'.format( self.formatTimeDiff(t3, t4) ))
+
     # Calc knn Matches
     matches = flann.knnMatch(des_photo, des_screen, k=2)
 
     logging.info('knn {}'.format(len(matches)))
+    t5 = time.perf_counter()
+    self.writeLog('Calced knn matches - {}ms'.format( self.formatTimeDiff(t4, t5) ))
 
     if not matches or len(matches) == 0:
       return False
@@ -90,10 +107,12 @@ class Matcher():
     # store all the good matches as per Lowe's ratio test.
     good = []
     for m,n in matches:
-        if m.distance < 0.75*n.distance:
-            good.append(m)
+      if m.distance < 0.75*n.distance:
+        good.append(m)
 
     logging.info('good {}'.format(len(good)))
+    t6 = time.perf_counter()
+    self.writeLog('Filtered good matches - {}ms'.format( self.formatTimeDiff(t5, t6) ))
 
     if not good or len(good) < 10:
       return False
@@ -104,6 +123,9 @@ class Matcher():
 
     M, _ = findHomography(photo_pts, screen_pts, RANSAC, 5.0)
 
+    t7 = time.perf_counter()
+    self.writeLog('Found Homography - {}ms'.format( self.formatTimeDiff(t6, t7) ))
+
     if len(M) == 0:
       return False
 
@@ -111,6 +133,8 @@ class Matcher():
     pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2) # pylint: disable=too-many-function-args
     dst = perspectiveTransform(pts, M)
 
+    t8 = time.perf_counter()
+    self.writeLog('Perspective Transform - {}ms'.format( self.formatTimeDiff(t7, t8) ))
 
     minX = dst[0][0][0]
     minY = dst[0][0][1]
@@ -149,23 +173,41 @@ class Matcher():
 
     imwrite(self.match_dir + '/result.png', screen_colored[ minY:maxY, minX:maxX])
 
+    t9 = time.perf_counter()
+    self.writeLog('Wrote Image - {}ms'.format( self.formatTimeDiff(t8, t9) ))
+
     return True
 
 
   def algorithm_ORB(self, photo, screen, screen_colored):
+    
+    t1 = time.perf_counter()
 
     # Init algorithm
     orb = ORB_create(800)
+
+    t2 = time.perf_counter()
+
+    self.writeLog('Created ORB object - {}ms'.format( self.formatTimeDiff(t1, t2) ))
 
     # Detect and compute
     kp_photo, des_photo = orb.detectAndCompute(photo, None)
     kp_screen, des_screen = orb.detectAndCompute(screen, None)
 
+    t3 = time.perf_counter()
+    self.writeLog('Detected keypoints - {}ms'.format( self.formatTimeDiff(t2, t3) ))
+
     # Descriptor Matcher
     descriptor_matcher = DescriptorMatcher_create('BruteForce-Hamming')
 
+    t4 = time.perf_counter()
+    self.writeLog('Initialized Descriptor Matcher - {}ms'.format( self.formatTimeDiff(t3, t4) ))
+
     # Calc knn Matches
     matches = descriptor_matcher.knnMatch(des_photo, des_screen, k=2)
+
+    t5 = time.perf_counter()
+    self.writeLog('Calced knn matches - {}ms'.format( self.formatTimeDiff(t4, t5) ))
 
     if not matches or len(matches) == 0:
       return False
@@ -176,6 +218,9 @@ class Matcher():
         if m.distance < 0.75*n.distance:
             good.append(m)
 
+    t6 = time.perf_counter()
+    self.writeLog('Filtered good matches - {}ms'.format( self.formatTimeDiff(t5, t6) ))
+
     if not good or len(good) < 20:
       return False
 
@@ -184,12 +229,18 @@ class Matcher():
 
     M, _ = findHomography(photo_pts, screen_pts, RANSAC, 5.0)
 
+    t7 = time.perf_counter()
+    self.writeLog('Found Homography - {}ms'.format( self.formatTimeDiff(t6, t7) ))
+
     if len(M) == 0:
       return False
 
     h, w = photo.shape
     pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2) # pylint: disable=too-many-function-args
     dst = perspectiveTransform(pts, M)
+
+    t8 = time.perf_counter()
+    self.writeLog('Perspective Transform - {}ms'.format( self.formatTimeDiff(t7, t8) ))
 
 
     minX = dst[0][0][0]
@@ -228,6 +279,9 @@ class Matcher():
       return False
 
     imwrite(self.match_dir + '/result.png', screen_colored[ int(minY):int(maxY), int(minX):int(maxX)])
+
+    t9 = time.perf_counter()
+    self.writeLog('Wrote Image - {}ms'.format( self.formatTimeDiff(t8, t9) ))
 
     return True
 
