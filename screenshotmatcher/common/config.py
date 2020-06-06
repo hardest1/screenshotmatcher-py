@@ -5,11 +5,6 @@ import platform
 import random
 
 
-def createIdentifier(data):
-  h = hashlib.new('sha1')
-  h.update(data.encode())
-  return h.hexdigest()
-
 identifier = ""
 
 try:
@@ -18,7 +13,7 @@ try:
 except:
   with open('id', 'w') as f:
     data_for_encoding = "{}-{}".format( platform.platform(), random.randrange(1000000, 9999999) )
-    identifier = createIdentifier( data_for_encoding )
+    identifier = data_for_encoding
     f.write(identifier)
 
 class Config():
@@ -34,5 +29,7 @@ class Config():
 
   DEFAULT_ALGORITHM = 'SURF'
   CURRENT_ALGORITHM = DEFAULT_ALGORITHM
+
+  API_SECRET = 'd45f6g7h8j9§$d5AHF7h8k'
 
   IS_DIST = getattr(sys, 'frozen', False)
