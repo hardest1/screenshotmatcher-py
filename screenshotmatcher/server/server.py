@@ -5,6 +5,8 @@ import json
 import requests
 import urllib3
 import logging
+import time
+
 from flask import Flask, request, redirect, url_for, Response, send_from_directory
 from werkzeug.utils import secure_filename
 
@@ -17,7 +19,7 @@ from common.utils import allowed_file
 class Server():
   def __init__(self):
 
-    logging.basicConfig(filename='./server.log',level=logging.DEBUG)
+    logging.basicConfig(filename='./match.log',level=logging.DEBUG)
 
     if Config.IS_DIST:
       static_path = 'www'
@@ -67,7 +69,8 @@ class Server():
 
 
     payload = { 
-      'secret': "d45f6g7h8j9§$d5AHF7h8k", 
+      'secret': Config.API_SECRET,
+      'identifier': Config.IDENTIFIER,
       'comment': comment,
       'hasScreenshot': has_screenshot,
       'algorithm': Config.CURRENT_ALGORITHM,
@@ -121,10 +124,22 @@ class Server():
     uploaded_file.save( match_dir + '/' + filename )
     
     # Start matcher
+    start_time = time.perf_counter()
     matcher = Matcher(uid, filename)
-
-    #print('Using {}'.format(Config.CURRENT_ALGORITHM))
     match_result = matcher.match(algorithm=Config.CURRENT_ALGORITHM)
+    end_time = time.perf_counter()
+
+    # Send data to server for logging
+    payload = { 
+      'secret': Config.API_SECRET,
+      'identifier': Config.IDENTIFIER,
+      'hasResult': bool(match_result),
+      'algorithm': Config.CURRENT_ALGORITHM,
+      'speed': round( end_time - start_time , 5)
+    }
+
+    urllib3.disable_warnings()
+    requests.post("https://feedback.hartmann-it.de/log", data=payload, verify=False )
 
     response = {'uid': uid}
 
