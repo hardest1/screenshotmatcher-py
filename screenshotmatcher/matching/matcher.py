@@ -87,7 +87,7 @@ class Matcher():
     self.writeLog('Detected keypoints - {}ms'.format( self.formatTimeDiff(t2, t3) ))
 
     # Descriptor Matcher
-    index_params = dict(algorithm = 0, trees = 5)
+    index_params = dict(algorithm = 1, trees = 5)
     search_params = dict(checks = 50)
     flann = FlannBasedMatcher(index_params, search_params)
 
@@ -184,7 +184,7 @@ class Matcher():
     t1 = time.perf_counter()
 
     # Init algorithm
-    orb = ORB_create(800)
+    orb = ORB_create(8000)
 
     t2 = time.perf_counter()
 
