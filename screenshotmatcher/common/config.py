@@ -8,10 +8,10 @@ import random
 identifier = ""
 
 try:
-  with open('id', 'r') as f:
+  with open('id.txt', 'r') as f:
     identifier = f.read()
 except:
-  with open('id', 'w') as f:
+  with open('id.txt', 'w') as f:
     data_for_encoding = "{}-{}".format( platform.platform(), random.randrange(1000000, 9999999) )
     identifier = data_for_encoding
     f.write(identifier)
