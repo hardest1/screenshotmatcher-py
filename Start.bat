@@ -1,2 +1,3 @@
 @echo off
-start pythonw.exe screenshotmatcher/main.py %*
+cd screenshotmatcher
+python.exe main.py %*
