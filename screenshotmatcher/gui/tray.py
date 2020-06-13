@@ -73,8 +73,10 @@ class Tray():
       if platform.system() == 'Linux':
         os.system('python3 show_qr.py "{}"'.format(Config.SERVICE_URL))
       else:
-        subprocess.run('show_qr.py "{}"'.format(Config.SERVICE_URL), shell=True)
-    
+        proc_result = subprocess.run('show_qr.py "{}"'.format(Config.SERVICE_URL), shell=True)
+        if proc_result.returncode != 0:
+          proc_result = subprocess.run('show_qr.bat "{}"'.format(Config.SERVICE_URL), shell=True)
+
 
   def onclick_results(self):
     if Config.IS_DIST:
