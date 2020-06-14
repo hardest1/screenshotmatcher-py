@@ -16,8 +16,9 @@ bio = io.BytesIO()
 img.save(bio, format="PNG")
 del img
 
+sg.theme(new_theme='material2')
 layout = [[sg.Image(data=bio.getvalue())]]
-window = sg.Window('ScreenshotMatcher - Pair device', layout)
+window = sg.Window('Pair your device', layout)
 
 
 event, values = window.read()
