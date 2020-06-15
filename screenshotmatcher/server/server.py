@@ -135,6 +135,7 @@ class Server():
       'identifier': Config.IDENTIFIER,
       'hasResult': bool(match_result),
       'algorithm': Config.CURRENT_ALGORITHM,
+      'device': request.values.get('device'),
       'speed': round( end_time - start_time , 5)
     }
 
