@@ -27,17 +27,21 @@ from common.config import Config
 
 class Matcher():
   
-  def __init__(self, match_uid, photo):
+  def __init__(self, match_uid, photo, create_screenshot = True):
 
     self.match_uid = match_uid
 
     self.match_dir = './www/results/result-' + match_uid
 
-    self.screenshot_file = 'screenshot.png'
-    self.screenshot = ImageGrab.grab()
-    self.screenshot.save(self.match_dir + '/' + self.screenshot_file)
-
     self.photo_file = photo
+
+    if create_screenshot:
+      self.screenshot_file = 'screenshot.png'
+      self.screenshot = ImageGrab.grab()
+      self.screenshot.save(self.match_dir + '/' + self.screenshot_file)
+  
+  def setMatchDir(self, new_dir):
+    self.match_dir = new_dir
   
   def writeLog(self, msg):
     logging.info('MATCHER - {}'.format(msg))
@@ -67,12 +71,12 @@ class Matcher():
 
     return match_result
 
-  def algorithm_SURF(self, photo, screen, screen_colored):
+  def algorithm_SURF(self, photo, screen, screen_colored, hessianThreshold = 5000, descMatcher = 1):
 
     t1 = time.perf_counter()
 
     # Init algorithm
-    surf = SURF_create(400)
+    surf = SURF_create(hessianThreshold)
     surf.setUpright(True)
 
     t2 = time.perf_counter()
@@ -87,15 +91,21 @@ class Matcher():
     self.writeLog('Detected keypoints - {}ms'.format( self.formatTimeDiff(t2, t3) ))
 
     # Descriptor Matcher
-    index_params = dict(algorithm = 1, trees = 5)
-    search_params = dict(checks = 50)
-    flann = FlannBasedMatcher(index_params, search_params)
+    try:
+      index_params = dict(algorithm = descMatcher, trees = 5)
+      search_params = dict(checks = 50)
+      flann = FlannBasedMatcher(index_params, search_params)
+    except:
+      return False
 
     t4 = time.perf_counter()
     self.writeLog('Initialized Flann Matcher - {}ms'.format( self.formatTimeDiff(t3, t4) ))
 
     # Calc knn Matches
-    matches = flann.knnMatch(des_photo, des_screen, k=2)
+    try:
+      matches = flann.knnMatch(des_photo, des_screen, k=2)
+    except:
+      return False
 
     logging.info('knn {}'.format(len(matches)))
     t5 = time.perf_counter()
@@ -126,7 +136,7 @@ class Matcher():
     t7 = time.perf_counter()
     self.writeLog('Found Homography - {}ms'.format( self.formatTimeDiff(t6, t7) ))
 
-    if len(M) == 0:
+    if M is None or not M.any() or len(M) == 0:
       return False
 
     h, w = photo.shape
@@ -179,12 +189,12 @@ class Matcher():
     return True
 
 
-  def algorithm_ORB(self, photo, screen, screen_colored):
+  def algorithm_ORB(self, photo, screen, screen_colored, nfeatures = 8000, descriptor_matcher_name = 'BruteForce-Hamming'):
     
     t1 = time.perf_counter()
 
     # Init algorithm
-    orb = ORB_create(8000)
+    orb = ORB_create(nfeatures)
 
     t2 = time.perf_counter()
 
@@ -198,13 +208,19 @@ class Matcher():
     self.writeLog('Detected keypoints - {}ms'.format( self.formatTimeDiff(t2, t3) ))
 
     # Descriptor Matcher
-    descriptor_matcher = DescriptorMatcher_create('BruteForce-Hamming')
+    try:
+      descriptor_matcher = DescriptorMatcher_create(descriptor_matcher_name)
+    except:
+      return False
 
     t4 = time.perf_counter()
     self.writeLog('Initialized Descriptor Matcher - {}ms'.format( self.formatTimeDiff(t3, t4) ))
 
     # Calc knn Matches
-    matches = descriptor_matcher.knnMatch(des_photo, des_screen, k=2)
+    try:
+      matches = descriptor_matcher.knnMatch(des_photo, des_screen, k=2)
+    except:
+      return False
 
     t5 = time.perf_counter()
     self.writeLog('Calced knn matches - {}ms'.format( self.formatTimeDiff(t4, t5) ))
@@ -232,7 +248,7 @@ class Matcher():
     t7 = time.perf_counter()
     self.writeLog('Found Homography - {}ms'.format( self.formatTimeDiff(t6, t7) ))
 
-    if len(M) == 0:
+    if M is None or not M.any() or len(M) == 0:
       return False
 
     h, w = photo.shape
