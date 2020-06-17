@@ -1,6 +1,9 @@
 screenshotmatcher/www/results/*
 !screenshotmatcher/www/results/.gitkeep
 
+screenshotmatcher/testing/logs/*
+!screenshotmatcher/testing/logs/.gitkeep
+
 id.txt
 
 match.log
