@@ -2,6 +2,9 @@
 
 Running on Python 3.6+ (Untested on lower versions)
 
+**Does not work with Python 3.8 on Windows due to missing dependencies**
+You can fix this by running Python version 3.6 or 3.7
+
 
 ### Install dependencies
 ```sh
