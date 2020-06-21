@@ -124,6 +124,8 @@ class TestSuite():
     matcher.setMatchDir(match_dir)
 
     plot_data = []
+    match_count = 0
+    successful_matches = 0
 
     for j in range(10):
 
