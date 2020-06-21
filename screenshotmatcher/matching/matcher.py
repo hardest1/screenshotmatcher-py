@@ -189,7 +189,7 @@ class Matcher():
     return True
 
 
-  def algorithm_ORB(self, photo, screen, screen_colored, nfeatures = 8000, descriptor_matcher_name = 'BruteForce-Hamming'):
+  def algorithm_ORB(self, photo, screen, screen_colored, nfeatures = 4500, descriptor_matcher_name = 'BruteForce-Hamming'):
     
     t1 = time.perf_counter()
 
