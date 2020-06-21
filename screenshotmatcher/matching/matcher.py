@@ -71,7 +71,7 @@ class Matcher():
 
     return match_result
 
-  def algorithm_SURF(self, photo, screen, screen_colored, hessianThreshold = 5000, descMatcher = 1):
+  def algorithm_SURF(self, photo, screen, screen_colored, hessianThreshold = 3500, descMatcher = 1):
 
     t1 = time.perf_counter()
 
