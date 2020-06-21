@@ -8,7 +8,8 @@ You can fix this by running Python version 3.6 or 3.7
 
 ### Install dependencies
 ```sh
-pip3 install -r requirements.txt
+pip3 install -r requirements-windows.txt  # For Windows
+pip3 install -r requirements-linux.txt    # For Unix
 
 # You may need to install tkinter depending on your system
 sudo apt-get install python3-tk
