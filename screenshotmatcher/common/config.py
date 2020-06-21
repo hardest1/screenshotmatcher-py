@@ -21,6 +21,7 @@ class Config():
   IDENTIFIER = identifier
 
   APP_NAME = 'Screenshot Matcher'
+  CURRENT_VERSION = 'v1.1.0'
   ICON_PATH = 'gui/icon.png'
   HOST = common.utils.getCurrentIPAddress()
   PORT = 49049
