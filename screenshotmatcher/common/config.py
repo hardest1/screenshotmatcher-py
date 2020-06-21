@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import common.utils
 import sys
 import hashlib
