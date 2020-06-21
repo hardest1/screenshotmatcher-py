@@ -32,7 +32,7 @@ def print_banner(app_name, version, id):
   text_style_notice = colored.bg('9') + colored.attr('bold')
   text_style_banner = colored.fg('156') + colored.attr('bold')
 
-  notice_text = "    DO NOT CLOSE THIS WINDOW / FENSTER NICHT SCHLIESSEN    \n"
+  notice_text = "    DO NOT CLOSE THIS WINDOW / FENSTER NICHT SCHLIESSEN    "
                
   banner_text = """
   ---------------------------
@@ -44,5 +44,7 @@ def print_banner(app_name, version, id):
   """ % ( app_name, version, id )
 
 
+  print( '' )
   print( colored.stylize( notice_text, text_style_notice ) )
+  print( '' )
   print( colored.stylize( banner_text, text_style_banner ) )
