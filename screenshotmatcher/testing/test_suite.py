@@ -22,7 +22,7 @@ class TestSuite():
     self.tmp = tempfile.gettempdir()
     self.window = window
 
-  def plot(self, data, xlabel, ylabel, title):
+  def plot(self, data, xlabel, ylabel, title, with_legend = True):
     fig, ax = plt.subplots()
 
     for dataset in data:
@@ -31,7 +31,10 @@ class TestSuite():
     plt.ylabel(ylabel)
     plt.xlabel(xlabel)
     plt.title(title)
-    plt.legend()
+
+    if with_legend:
+      plt.legend()
+
     plt.show(block=False)
 
 
@@ -103,7 +106,7 @@ class TestSuite():
 
     success_rate = round( (successful_matches / match_count) * 100, 2)
     print(f'Successful: {success_rate}% - {successful_matches}/{match_count} ')
-    self.plot(plot_data, 'Threshold', 'Time', 'Optimal Hessian Threshold Parameter (SURF)')
+    self.plot(plot_data, 'Threshold', 'Time in seconds', 'Optimal Hessian Threshold Parameter (SURF)')
 
 
   def test_SURF_algos(self, values):
@@ -174,7 +177,7 @@ class TestSuite():
 
     success_rate = round( (successful_matches / match_count) * 100, 2)
     print(f'Successful: {success_rate}% - {successful_matches}/{match_count} ')
-    self.plot(plot_data, 'Algorithm', 'Time', 'Optimal Descriptor Matcher Parameter (SURF)')
+    self.plot(plot_data, 'Algorithm', 'Time in seconds', 'Optimal Descriptor Matcher Parameter (SURF)', False)
 
     return
 
@@ -247,4 +250,4 @@ class TestSuite():
 
     success_rate = round( (successful_matches / match_count) * 100, 2)
     print(f'Successful: {success_rate}% - {successful_matches}/{match_count} ')
-    self.plot(plot_data, 'nFeatures', 'Time', 'Optimal nFeatures Parameter (ORB)')
+    self.plot(plot_data, 'nFeatures', 'Time in seconds', 'Optimal nFeatures Parameter (ORB)')

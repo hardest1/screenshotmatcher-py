@@ -62,3 +62,11 @@ WIP
 Starting the application will add an icon to your tray which provides a menu to control the application. Here you can show the QR code to pair your smartphone with your computer, change image algorithms and show past results.
 
 After pairing your smartphone you are all set up to start taking pictures with the smartphone app and have fun!
+
+##### Tests
+The test suite can be opened with these commands:
+```sh
+cd screenshotmatcher
+python3 tests.py
+```
+Here you can perform different performance tests by tweaking the parameters of the underlying feature matching algorithm.
