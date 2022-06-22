@@ -10,7 +10,7 @@ itsdangerous==1.1.0
 Jinja2==2.11.2
 MarkupSafe==1.1.1
 mss==5.1.0
-numpy==1.18.4
+numpy==1.22.0
 Pillow==7.1.2
 pyscreenshot==2.1
 PySimpleGUI==4.19.0
